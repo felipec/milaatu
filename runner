@@ -3,11 +3,82 @@
 import os, sys
 import json
 
+class Pipe(object):
+	def __init__(self):
+		r, w = os.pipe()
+		r, w = os.fdopen(r, 'r', 0), os.fdopen(w, 'w', 0)
+		self.r, self.w = r, w
+
+	def close_in(self):
+		self.r.close()
+
+	def close_out(self):
+		self.w.close()
+
+	def dump(self, obj):
+		json.dump(obj, self.w)
+		print >> self.w
+
+	def load(self):
+		s = self.r.readline()
+		if not s: return None
+		return json.loads(s)
+
+def run_child():
+	while True:
+		data = p2.load()
+		if not data: break
+
+		base = data['base']
+
+		try:
+			mname = "tests." + base
+			__import__(mname)
+			module = sys.modules[mname]
+			t = module.test_class()
+			for kv in data['in'].iteritems():
+				setattr(t, *kv)
+			t.start()
+			if t.error:
+				data['error'] = t.error
+			if hasattr(t, 'out') and t.out:
+				data['out'] = t.out
+
+		except ImportError, e:
+			data['error'] = "bad test '%s': %s" % (base, e)
+
+		p1.dump(data)
+
+	sys.exit(0)
+
+def respawn():
+	global p1, p2
+
+	p1 = Pipe()
+	p2 = Pipe()
+
+	pid = os.fork()
+	if pid:
+		# Parent
+		p1.close_out()
+		p2.close_in()
+
+		return pid
+
+	else:
+		# Child
+		p1.close_in()
+		p2.close_out()
+
+		run_child()
+
 run = {}
 
 f = open("tests.json", "r")
 tests = json.load(f)
 results = []
+
+pid = respawn()
 
 for t in tests:
 	n = {}
@@ -16,24 +87,13 @@ for t in tests:
 	n['in'] = t
 	print n['name']
 
-	data = n
-	base = data['base']
-
-	try:
-		mname = "tests." + base
-		__import__(mname)
-		module = sys.modules[mname]
-		t = module.test_class()
-		for kv in data['in'].iteritems():
-			setattr(t, *kv)
-		t.start()
-		if t.error:
-			data['error'] = t.error
-		if hasattr(t, 'out') and t.out:
-			data['out'] = t.out
-
-	except ImportError, e:
-		data['error'] = "bad test '%s': %s" % (base, e)
+	p2.dump(n)
+	data = p1.load()
+	if not data:
+		p, s = os.waitpid(pid, os.P_NOWAIT)
+		pid = respawn()
+		data = n
+		data['error'] = "process died: signal %i" % s
 
 	if 'error' in data:
 		r = 0.0

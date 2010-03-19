@@ -12,5 +12,10 @@
 	"base": "bad_test",
 	"name": "bad_test",
 	"expected_failure": true
+},
+{
+	"base": "kill",
+	"name": "kill_test",
+	"expected_failure": true
 }
 ]
