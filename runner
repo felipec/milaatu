@@ -40,6 +40,9 @@ for t in tests:
 	else:
 		r = 100.0
 
+	if data['in'].get('expected_failure', False):
+		r = 100.0 - r
+
 	data['result'] = r
 	results.append(data)
 

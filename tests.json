@@ -2,5 +2,10 @@
 {
 	"base": "dummy",
 	"name": "dummy"
+},
+{
+	"base": "error",
+	"name": "insanity_error",
+	"expected_failure": true
 }
 ]
