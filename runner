@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+
+import os, sys
+import json
+
+run = {}
+
+f = open("tests.json", "r")
+tests = json.load(f)
+results = []
+
+for t in tests:
+	n = {}
+	n['name'] = t.pop('name')
+	n['base'] = t.pop('base')
+	n['in'] = t
+	print n['name']
+
+	data = n
+	base = data['base']
+
+	try:
+		mname = "tests." + base
+		__import__(mname)
+		module = sys.modules[mname]
+		t = module.test_class()
+		for kv in data['in'].iteritems():
+			setattr(t, *kv)
+		t.start()
+		if t.error:
+			data['error'] = t.error
+		if hasattr(t, 'out') and t.out:
+			data['out'] = t.out
+
+	except ImportError, e:
+		data['error'] = "bad test '%s': %s" % (base, e)
+
+	if 'error' in data:
+		r = 0.0
+	else:
+		r = 100.0
+
+	data['result'] = r
+	results.append(data)
+
+run['results'] = results
+
+o = open("results.json", "w")
+json.dump(run, o, indent = 4, sort_keys = True)
+print >> o
