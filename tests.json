@@ -17,5 +17,11 @@
 	"base": "kill",
 	"name": "kill_test",
 	"expected_failure": true
+},
+{
+	"base": "gst_error",
+	"name": "gst_error",
+	"state_error": 1,
+	"expected_failure": true
 }
 ]

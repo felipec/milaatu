@@ -3,6 +3,8 @@
 import os, sys
 import json
 
+import gobject
+
 class Pipe(object):
 	def __init__(self):
 		r, w = os.pipe()
@@ -25,6 +27,8 @@ class Pipe(object):
 		return json.loads(s)
 
 def run_child():
+	gobject.threads_init()
+
 	while True:
 		data = p2.load()
 		if not data: break
