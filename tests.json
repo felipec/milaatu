@@ -31,5 +31,11 @@
 	"bitrate": 800000,
 	"framerate": 15,
 	"framesize": "176x144"
+},
+{
+	"base": "gst_vdec",
+	"name": "mpeg4_dec_ntsc",
+	"element": "ffdec_mpeg4",
+	"location": "/data/private/mma-test-data/decoders/mpeg4/functional/mpeg4_NTSC_30f_8mb__ASPL5_parkjoy.m4v.mp4"
 }
 ]
