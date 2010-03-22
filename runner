@@ -3,8 +3,18 @@
 import os, sys
 import json
 from datetime import datetime
+from optparse import OptionParser
 
 import gobject
+
+parser = OptionParser()
+parser.add_option("-u", "--user", default="")
+parser.add_option("-w", "--hardware", default="")
+
+(options, args) = parser.parse_args()
+
+user = options.user
+hardware = options.hardware
 
 class Pipe(object):
 	def __init__(self):
@@ -88,6 +98,8 @@ def get_date():
 	return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 run = {}
+run['hw'] = hardware
+run['user'] = user
 run['date'] = get_date()
 
 f = open("tests.json", "r")
