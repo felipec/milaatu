@@ -4,8 +4,14 @@ import sys
 import json
 
 import MySQLdb
+from optparse import OptionParser
 
-db = MySQLdb.connect(host = "localhost",
+parser = OptionParser()
+parser.add_option("-n", "--host", default="localhost")
+
+(options, args) = parser.parse_args()
+
+db = MySQLdb.connect(host = options.host,
 		user = "test",
 		db = "insanity")
 
