@@ -10,6 +10,7 @@ class GstVDecoderTest(GstTest):
 
 		self.element = None
 		self.num_buffers = 100
+		self.expected_framerate = 0
 
 		self.buffer_times = []
 
@@ -47,5 +48,10 @@ class GstVDecoderTest(GstTest):
 		total_time = self.buffer_times[-1] - self.buffer_times[0]
 		fps = count / total_time
 		self.out['framerate'] = int(fps)
+		if self.expected_framerate:
+			if fps >= self.expected_framerate:
+				self.checks['framerate'] = 1
+			else:
+				self.checks['framerate'] = 0
 
 test_class = GstVDecoderTest

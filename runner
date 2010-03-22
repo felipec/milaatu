@@ -47,6 +47,13 @@ def run_child():
 				data['error'] = t.error
 			if hasattr(t, 'out') and t.out:
 				data['out'] = t.out
+			if hasattr(t, 'checks') and t.checks:
+				data['checks'] = t.checks
+				total = len(t.checks)
+				result = 0.0
+				for x in t.checks.values():
+					result += 100 * float(x) / total
+				data['result'] = result
 
 		except ImportError, e:
 			data['error'] = "bad test '%s': %s" % (base, e)
@@ -101,6 +108,8 @@ for t in tests:
 
 	if 'error' in data:
 		r = 0.0
+	elif 'result' in data:
+		r = data['result']
 	else:
 		r = 100.0
 

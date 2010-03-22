@@ -13,6 +13,7 @@ class GstVEncoderTest(GstTest):
 		self.bitrate = 0
 		self.framerate = 15
 		self.framesize = "640x480"
+		self.expected_framerate = 0
 
 		self.buffer_sizes = []
 		self.buffer_times = []
@@ -54,5 +55,15 @@ class GstVEncoderTest(GstTest):
 		bt = sum(self.buffer_sizes) / total_time * 8
 		self.out['framerate'] = int(fps)
 		self.out['bitrate'] = int(bt)
+		if self.expected_framerate:
+			if fps >= self.expected_framerate:
+				self.checks['framerate'] = 1
+			else:
+				self.checks['framerate'] = 0
+		tbt = self.bitrate
+		if (bt > tbt - (tbt * 0.15)) and (bt < tbt + (tbt * 0.15)):
+			self.checks['bitrate'] = 1
+		else:
+			self.checks['bitrate'] = 0
 
 test_class = GstVEncoderTest
