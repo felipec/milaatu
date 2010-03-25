@@ -126,6 +126,8 @@ for t in tests:
 		pid = respawn()
 		data = n
 		data['error'] = "process died: signal %i" % s
+	elif data['in'].get('respawn', False):
+		pid = respawn()
 
 	if 'error' in data:
 		r = 0.0
