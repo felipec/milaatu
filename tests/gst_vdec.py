@@ -15,8 +15,12 @@ class GstVDecoderTest(GstTest):
 		self.buffer_times = []
 
 	def pad_add(self, demuxer, pad):
-		dec_pad = self.dec.get_pad("sink")
-		pad.link(dec_pad)
+		if not pad.is_linked():
+			dec_pad = self.dec.get_pad("sink")
+			try:
+				pad.link(dec_pad)
+			except gst.LinkError:
+				pass
 
 	def create_pipeline(self):
 		p = gst.Pipeline()
@@ -45,6 +49,9 @@ class GstVDecoderTest(GstTest):
 
 	def on_stop(self):
 		count = len(self.buffer_times) - 1
+		if count <= 0:
+			self.error = "No buffers processed"
+			return
 		total_time = self.buffer_times[-1] - self.buffer_times[0]
 		fps = count / total_time
 		self.out['framerate'] = int(fps)
