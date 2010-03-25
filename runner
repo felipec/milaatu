@@ -35,7 +35,11 @@ class Pipe(object):
 	def load(self):
 		s = self.r.readline()
 		if not s: return None
-		return json.loads(s)
+		try:
+			return json.loads(s)
+		except ValueError:
+			print "bad data"
+			return None
 
 def run_child():
 	gobject.threads_init()
