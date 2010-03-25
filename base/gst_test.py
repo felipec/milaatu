@@ -29,16 +29,6 @@ class GstTest(object):
 	def create_pipeline(self):
 		return gst.Pipeline()
 
-	def handle_mainloop_start(self):
-		self.pipeline = self.create_pipeline()
-		self.bus = self.pipeline.get_bus()
-
-		self.bus.add_signal_watch()
-		self.bus.connect("message", self.handle_bus_message)
-
-		self.__watch_children(self.pipeline)
-		self.pipeline.set_state(self.initial_state)
-
 	def on_message(self, bus, message):
 		if message.type == gst.MESSAGE_EOS:
 			self.player.set_state(gst.STATE_NULL)
