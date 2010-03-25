@@ -16,6 +16,7 @@ class GstVEncoderTest(GstTest):
 		self.expected_framerate = 0
 		self.deviation = 0.15
 		self.format = "I420"
+		self.location = None
 
 		self.buffer_sizes = []
 		self.buffer_times = []
@@ -26,8 +27,18 @@ class GstVEncoderTest(GstTest):
 		width, height = self.framesize.split("x")
 		width, height = int(width), int(height)
 
-		src = gst.element_factory_make("videotestsrc")
-		src.props.num_buffers = self.num_buffers
+		if self.location:
+			src = gst.element_factory_make("filesrc")
+			src.props.num_buffers = self.num_buffers
+			src.props.location = self.location
+			if self.format == "I420":
+				bpp = 1.5
+			elif self.format == "UYVY":
+				bpp = 2
+			src.props.blocksize = width * height * bpp
+		else:
+			src = gst.element_factory_make("videotestsrc")
+			src.props.num_buffers = self.num_buffers
 		enc = gst.element_factory_make(self.element)
 		enc.props.bitrate = self.bitrate
 		sink = gst.element_factory_make("fakesink")
