@@ -28,7 +28,10 @@ class GstVDecoderTest(GstTest):
 		src = gst.element_factory_make("filesrc")
 		src.props.num_buffers = self.num_buffers
 		src.props.location = self.location
-		demux = gst.element_factory_make("qtdemux")
+		if self.location.endswith(".asf") or self.location.endswith(".wmv"):
+			demux = gst.element_factory_make("nokiaasfdemux")
+		else:
+			demux = gst.element_factory_make("qtdemux")
 		dec = gst.element_factory_make(self.element)
 		sink = gst.element_factory_make("fakesink")
 		demux.connect("pad-added", self.pad_add)
