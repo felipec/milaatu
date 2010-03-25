@@ -3,6 +3,8 @@ import time
 
 from base.gst_test import GstTest
 
+import os
+
 class GstVEncoderTest(GstTest):
 
 	def __init__(self):
@@ -20,6 +22,12 @@ class GstVEncoderTest(GstTest):
 
 		self.buffer_sizes = []
 		self.buffer_times = []
+
+	def start(self):
+		# cache the file
+		if self.location:
+			os.system("dd if=%s of=/dev/null" % self.location)
+		GstTest.start(self)
 
 	def create_pipeline(self):
 		p = gst.Pipeline()
