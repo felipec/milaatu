@@ -14,6 +14,8 @@ class GstVEncoderTest(GstTest):
 		self.framerate = 15
 		self.framesize = "640x480"
 		self.expected_framerate = 0
+		self.deviation = 0.15
+		self.format = "I420"
 
 		self.buffer_sizes = []
 		self.buffer_times = []
@@ -21,17 +23,19 @@ class GstVEncoderTest(GstTest):
 	def create_pipeline(self):
 		p = gst.Pipeline()
 
+		width, height = self.framesize.split("x")
+		width, height = int(width), int(height)
+
 		src = gst.element_factory_make("videotestsrc")
 		src.props.num_buffers = self.num_buffers
 		enc = gst.element_factory_make(self.element)
 		enc.props.bitrate = self.bitrate
 		sink = gst.element_factory_make("fakesink")
 
-		width, height = self.framesize.split("x")
-
 		s = gst.Structure("video/x-raw-yuv")
-		s["width"] = int(width)
-		s["height"] = int(height)
+		s["format"] = gst.Fourcc(self.format)
+		s["width"] = width
+		s["height"] = height
 		s["framerate"] = gst.Fraction(self.framerate, 1)
 		capf = gst.element_factory_make("capsfilter")
 		capf.props.caps = gst.Caps(s)
@@ -61,9 +65,11 @@ class GstVEncoderTest(GstTest):
 			else:
 				self.checks['framerate'] = 0
 		tbt = self.bitrate
-		if (bt > tbt - (tbt * 0.15)) and (bt < tbt + (tbt * 0.15)):
-			self.checks['bitrate'] = 1
-		else:
-			self.checks['bitrate'] = 0
+		if tbt:
+			dev = self.deviation
+			if (bt > tbt - (tbt * dev)) and (bt < tbt + (tbt * dev)):
+				self.checks['bitrate'] = 1
+			else:
+				self.checks['bitrate'] = 0
 
 test_class = GstVEncoderTest
