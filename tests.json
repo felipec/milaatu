@@ -31,7 +31,7 @@
 	"bitrate": 800000,
 	"framerate": 15,
 	"framesize": "176x144",
-        "expected_framerate": 200
+	"expected_framerate": 200
 },
 {
 	"base": "gst_vdec",
