@@ -101,23 +101,13 @@ def respawn():
 def get_date():
 	return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-run = {}
-run['hw'] = hardware
-run['user'] = user
-run['date'] = get_date()
+def run_test(t):
+	global pid
 
-f = open("tests.json", "r")
-tests = json.load(f)
-results = []
-
-pid = respawn()
-
-for t in tests:
 	n = {}
 	n['name'] = t.pop('name')
 	n['base'] = t.pop('base')
 	n['in'] = t
-	print n['name']
 
 	p2.dump(n)
 	data = p1.load()
@@ -141,6 +131,22 @@ for t in tests:
 
 	data['result'] = r
 	data['date'] = get_date()
+	return data
+
+run = {}
+run['hw'] = hardware
+run['user'] = user
+run['date'] = get_date()
+
+f = open("tests.json", "r")
+tests = json.load(f)
+results = []
+
+pid = respawn()
+
+for t in tests:
+	print t['name']
+	data = run_test(t)
 	results.append(data)
 
 run['results'] = results
