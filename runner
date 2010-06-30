@@ -9,6 +9,7 @@ import gobject
 
 parser = OptionParser()
 parser.add_option("-t", "--test")
+parser.add_option("-f", "--file", default="tests.json")
 parser.add_option("-u", "--user", default="")
 parser.add_option("-w", "--hardware", default="")
 
@@ -16,6 +17,7 @@ parser.add_option("-w", "--hardware", default="")
 
 user = options.user
 hardware = options.hardware
+tests_file = options.file
 test_name = options.test
 
 class Pipe(object):
@@ -140,7 +142,7 @@ run['hw'] = hardware
 run['user'] = user
 run['date'] = get_date()
 
-f = open("tests.json", "r")
+f = open(tests_file, "r")
 tests = json.load(f)
 results = []
 
