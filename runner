@@ -8,6 +8,7 @@ from optparse import OptionParser
 import gobject
 
 parser = OptionParser()
+parser.add_option("-t", "--test")
 parser.add_option("-u", "--user", default="")
 parser.add_option("-w", "--hardware", default="")
 
@@ -15,6 +16,7 @@ parser.add_option("-w", "--hardware", default="")
 
 user = options.user
 hardware = options.hardware
+test_name = options.test
 
 class Pipe(object):
 	def __init__(self):
@@ -145,9 +147,23 @@ results = []
 pid = respawn()
 
 for t in tests:
-	print t['name']
-	data = run_test(t)
-	results.append(data)
+	if test_name:
+		if t['name'] != test_name:
+			continue
+		data = run_test(t)
+		if 'error' in data:
+			print >> sys.stderr, "error: %s" % data['error']
+		r = data['result']
+		if (r == 100.0):
+			e = 0
+		else:
+			print >> sys.stderr, "result: %d" % (r)
+			e = -1
+		sys.exit(e)
+	else:
+		print t['name']
+		data = run_test(t)
+		results.append(data)
 
 run['results'] = results
 
