@@ -152,11 +152,24 @@ tests = json.load(f)
 results = []
 
 pid = respawn()
+to_run = None
 
 for t in tests:
 	if test_name:
 		if t['name'] != test_name:
 			continue
+		to_run = t
+		break
+	else:
+		print t['name']
+		data = run_test(t)
+		results.append(data)
+
+if test_name:
+	if not to_run:
+		print >> sys.stderr, "test not found"
+		sys.exit(-1)
+	else:
 		data = run_test(t)
 		if 'error' in data:
 			print >> sys.stderr, "error: %s" % data['error']
@@ -167,10 +180,6 @@ for t in tests:
 			print >> sys.stderr, "result: %d" % (r)
 			e = -1
 		sys.exit(e)
-	else:
-		print t['name']
-		data = run_test(t)
-		results.append(data)
 
 run['results'] = results
 
