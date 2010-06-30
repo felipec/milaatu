@@ -9,7 +9,7 @@ import gobject
 
 parser = OptionParser()
 parser.add_option("-t", "--test")
-parser.add_option("-f", "--file", default="tests.json")
+parser.add_option("-f", "--file")
 parser.add_option("-u", "--user", default="")
 parser.add_option("-w", "--hardware", default="")
 
@@ -136,6 +136,11 @@ def run_test(t):
 	data['result'] = r
 	data['date'] = get_date()
 	return data
+
+if not tests_file:
+	tests_file = os.environ.get('MILAATU_TESTS_FILE')
+if not tests_file:
+	tests_file = "tests.json"
 
 run = {}
 run['hw'] = hardware
