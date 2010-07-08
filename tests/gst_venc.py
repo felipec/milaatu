@@ -43,7 +43,7 @@ class GstVEncoderTest(GstTest):
 				bpp = 1.5
 			elif self.format == "UYVY":
 				bpp = 2
-			src.props.blocksize = width * height * bpp
+			src.props.blocksize = int(width * height * bpp)
 		else:
 			src = gst.element_factory_make("videotestsrc")
 			src.props.num_buffers = self.num_buffers
