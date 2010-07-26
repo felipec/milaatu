@@ -9,7 +9,7 @@ class GstVDecoderTest(GstTest):
 		GstTest.__init__(self)
 
 		self.element = None
-		self.num_buffers = 100
+		self.num_buffers = 500
 		self.expected_framerate = 0
 
 		self.buffer_times = []
