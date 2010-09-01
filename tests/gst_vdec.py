@@ -1,5 +1,6 @@
 import gst
 import time
+import os
 
 from base.gst_test import GstTest
 
@@ -28,10 +29,16 @@ class GstVDecoderTest(GstTest):
 		src = gst.element_factory_make("filesrc")
 		src.props.num_buffers = self.num_buffers
 		src.props.location = self.location
-		if self.location.endswith(".asf") or self.location.endswith(".wmv"):
-			demux = gst.element_factory_make("nokiaasfdemux")
-		else:
-			demux = gst.element_factory_make("qtdemux")
+
+		ext = os.path.splitext(self.location)[1].lower()
+		ext_demux = {
+				".asf": "asfdemux",
+				".wmv": "asfdemux",
+				".mp4": "qtdemux",
+				".avi": "avidemux",
+				".gdp": "gdpdepay" }
+
+		demux = gst.element_factory_make(ext_demux.get(ext))
 		dec = gst.element_factory_make(self.element)
 		sink = gst.element_factory_make("fakesink")
 		demux.connect("pad-added", self.pad_add)
