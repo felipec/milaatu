@@ -53,6 +53,10 @@ def run_child():
 		if not data: break
 
 		base = data['base']
+		env = data['env']
+		if env:
+			var, val = env.rsplit('=')
+			os.putenv(var, val)
 
 		try:
 			mname = "tests." + base
@@ -78,6 +82,9 @@ def run_child():
 			data['error'] = "bad test '%s': %s" % (base, e)
 
 		p1.dump(data)
+
+		if env:
+			os.unsetenv(var)
 
 	sys.exit(0)
 
@@ -112,6 +119,7 @@ def run_test(t):
 	n['name'] = t.pop('name')
 	n['base'] = t.pop('base')
 	n['in'] = t
+	n['env'] = t.pop('env', None)
 
 	p2.dump(n)
 	data = p1.load()
