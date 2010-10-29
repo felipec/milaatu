@@ -47,8 +47,13 @@ class GstVEncoderTest(GstTest):
 		else:
 			src = gst.element_factory_make("videotestsrc")
 			src.props.num_buffers = self.num_buffers
+		bitrate = self.bitrate
 		enc = gst.element_factory_make(self.element)
-		enc.props.bitrate = self.bitrate
+		if self.element == "x264enc":
+			bitrate /= 1000
+			enc.props.key_int_max = self.framerate
+			enc.props.byte_stream = self.bytestream
+		enc.props.bitrate = bitrate
 		sink = gst.element_factory_make("fakesink")
 
 		s = gst.Structure("video/x-raw-yuv")
