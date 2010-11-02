@@ -23,6 +23,8 @@ class GstVEncoderTest(GstTest):
 
 		self.buffer_sizes = []
 		self.buffer_times = []
+		self.mode = None
+		self.intra_refresh = None
 		self.codec = None
 
 		# h264 keyframe check
@@ -61,6 +63,12 @@ class GstVEncoderTest(GstTest):
 			enc.props.key_int_max = self.framerate
 			enc.props.byte_stream = self.bytestream
 			enc.props.aud = False
+
+		if self.mode is not None:
+			enc.props.mode = self.mode
+
+		if self.intra_refresh is not None:
+			enc.props.intra_refresh = self.intra_refresh
 
 		enc.props.bitrate = bitrate
 		sink = gst.element_factory_make("fakesink")
