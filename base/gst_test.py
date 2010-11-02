@@ -29,6 +29,9 @@ class GstTest(object):
 	def create_pipeline(self):
 		return gst.Pipeline()
 
+	def on_state_changed(self, old, new):
+		pass
+
 	def on_message(self, bus, message):
 		if message.type == gst.MESSAGE_EOS:
 			self.player.set_state(gst.STATE_NULL)
@@ -38,3 +41,6 @@ class GstTest(object):
 			err, debug = message.parse_error()
 			self.error = err.message
 			self.loop.quit()
+		elif message.type == gst.MESSAGE_STATE_CHANGED:
+			old, new, pend = message.parse_state_changed()
+			self.on_state_changed(old, new)
