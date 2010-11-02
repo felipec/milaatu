@@ -2,6 +2,7 @@ import gst
 import time
 
 from base.gst_test import GstTest
+from struct import *
 
 import os
 
@@ -22,6 +23,12 @@ class GstVEncoderTest(GstTest):
 
 		self.buffer_sizes = []
 		self.buffer_times = []
+		self.codec = None
+
+		# h264 keyframe check
+		self.total_count = 0
+		self.missed_keyframes = 0
+		self.bytestream = True
 
 	def start(self):
 		# cache the file
@@ -53,6 +60,8 @@ class GstVEncoderTest(GstTest):
 			bitrate /= 1000
 			enc.props.key_int_max = self.framerate
 			enc.props.byte_stream = self.bytestream
+			enc.props.aud = False
+
 		enc.props.bitrate = bitrate
 		sink = gst.element_factory_make("fakesink")
 
@@ -61,17 +70,39 @@ class GstVEncoderTest(GstTest):
 		s["width"] = width
 		s["height"] = height
 		s["framerate"] = gst.Fraction(self.framerate, 1)
-		capf = gst.element_factory_make("capsfilter")
-		capf.props.caps = gst.Caps(s)
 
-		p.add(src, capf, enc, sink)
-		gst.element_link_many(src, capf, enc, sink)
+		if self.codec == "h264":
+			capf_raw = gst.element_factory_make("capsfilter")
+			capf_raw.props.caps = gst.Caps(s)
+
+			s = gst.Structure("video/x-h264")
+			if self.bytestream:
+				s["stream-format"] = "byte-stream"
+			else:
+				s["stream-format"] = "avc"
+			capf_enc = gst.element_factory_make("capsfilter")
+			capf_enc.props.caps = gst.Caps(s)
+
+			p.add(src, capf_raw, enc, capf_enc, sink)
+			gst.element_link_many(src, capf_raw, enc, capf_enc, sink)
+		else:
+			capf = gst.element_factory_make("capsfilter")
+			capf.props.caps = gst.Caps(s)
+
+			p.add(src, capf, enc, sink)
+			gst.element_link_many(src, capf, enc, sink)
 
 		sink.connect("handoff", self.handoff)
 		sink.set_property("signal-handoffs", True)
 		return p
 
 	def handoff(self, element, buffer, pad):
+		if self.codec == "h264":
+			if self.total_count > 0:
+				type = unpack_from('b', buffer, 4)[0] & 0x1f
+				if (self.total_count % self.framerate == 0 and type != 7 and type != 8):
+					self.missed_keyframes += 1
+			self.total_count += 1
 		self.buffer_sizes.append(buffer.size)
 		self.buffer_times.append(time.time())
 		return True
@@ -95,5 +126,7 @@ class GstVEncoderTest(GstTest):
 				self.checks['bitrate'] = 1
 			else:
 				self.checks['bitrate'] = 0
+		if self.codec == "h264":
+			self.checks['keyframes-ok'] = self.missed_keyframes == 0
 
 test_class = GstVEncoderTest
