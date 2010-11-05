@@ -117,6 +117,9 @@ class GstVEncoderTest(GstTest):
 
 	def on_stop(self):
 		count = len(self.buffer_times) - 1
+		if count <= 0:
+			self.error = "No buffers processed"
+			return
 		total_time = self.buffer_times[-1] - self.buffer_times[0]
 		fps = count / total_time
 		bt = sum(self.buffer_sizes) / total_time * 8
