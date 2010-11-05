@@ -121,8 +121,9 @@ class GstVEncoderTest(GstTest):
 			self.error = "No buffers processed"
 			return
 		total_time = self.buffer_times[-1] - self.buffer_times[0]
+		tgt_time = float(self.num_buffers) / self.framerate
 		fps = count / total_time
-		bt = sum(self.buffer_sizes) / total_time * 8
+		bt = sum(self.buffer_sizes) / tgt_time * 8
 		self.out['framerate'] = int(fps)
 		self.out['bitrate'] = int(bt)
 		if self.expected_framerate:
