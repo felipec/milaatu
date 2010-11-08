@@ -138,6 +138,7 @@ class GstVEncoderTest(GstTest):
 				self.checks['bitrate'] = 1
 			else:
 				self.checks['bitrate'] = 0
+				print "missed by %i%%" % (abs(tbt - bt) / tbt * 100)
 		if self.codec == "h264":
 			self.checks['keyframes-ok'] = self.missed_keyframes == 0
 
