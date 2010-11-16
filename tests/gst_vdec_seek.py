@@ -58,7 +58,7 @@ class GstSeekTest(GstTest):
 			glib.timeout_add(1000, self.seek_timeout)
 			self.duration = self.player.query_duration(gst.FORMAT_TIME, None)[0]
 
-	 def seek_timeout(self):
+	def seek_timeout(self):
 		self.state += 1
 
 		if self.duration < 5 * gst.SECOND:
@@ -87,7 +87,7 @@ class GstSeekTest(GstTest):
 
 		assert False
 
-	 def seek(self, secs):
+	def seek(self, secs):
 		pos_before = self.player.query_position(gst.FORMAT_TIME, None)[0]
 		seek_ns = pos_before + (secs * gst.SECOND)
 		seek_start_time = time.time()
