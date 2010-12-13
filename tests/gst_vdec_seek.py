@@ -110,7 +110,7 @@ class GstSeekTest(GstTest):
 		seek_inac = secs * gst.SECOND - seek_dur
 		seek_time = seek_ready_time - seek_start_time
 
-		print "Seeked %d ms, inaccuracy %d ms, seeking took %.2f seconds" %
+		print "Seeked %d ms, inaccuracy %d ms, seeking took %.2f seconds" % \
 			(seek_dur / 1000000, seek_inac / 1000000, seek_time)
 		if seek_inac < 0.2:
 			return 1
