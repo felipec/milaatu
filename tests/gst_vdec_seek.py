@@ -80,7 +80,7 @@ class GstSeekTest(GstTest):
 		if self.state == 4:
 			pos_now = self.player.query_position(gst.FORMAT_TIME, None)[0]
 			self.checks['seek_to_end'] = \
-			    self.seek((self.duration - pos_now - gst.SECOND) / gst.SECOND)
+					self.seek((self.duration - pos_now - gst.SECOND) / gst.SECOND)
 
 			self.checks['clip_long_enough'] = 1
 			return False
@@ -111,7 +111,7 @@ class GstSeekTest(GstTest):
 		seek_time = seek_ready_time - seek_start_time
 
 		print "Seeked %d ms, inaccuracy %d ms, seeking took %.2f seconds" % \
-			(seek_dur / 1000000, seek_inac / 1000000, seek_time)
+				(seek_dur / 1000000, seek_inac / 1000000, seek_time)
 		if seek_inac < 0.2:
 			return 1
 		return 0
