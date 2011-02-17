@@ -28,12 +28,14 @@ class GstVEncoderBitrateTest(GstTest):
 		self.mode = None
 		self.intra_refresh = None
 		self.codec = None
+		self.ignored_first = False
 
 	def start(self):
 		# cache the file
 		if self.location:
 			os.system("dd if=%s of=/dev/null" % self.location)
 		GstTest.start(self)
+		self.ignored_first = False
 
 	def create_pipeline(self):
 		p = gst.Pipeline()
@@ -86,6 +88,10 @@ class GstVEncoderBitrateTest(GstTest):
 		return p
 
 	def handoff(self, element, buffer):
+		if not self.ignored_first:
+			self.ignored_first = True
+			return True
+
 		self.buffer_sizes.append(buffer.size)
 		buffer_ts = float(buffer.timestamp) / gst.SECOND
 		self.buffer_times.append(buffer_ts)
