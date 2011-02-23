@@ -19,6 +19,17 @@
 	"expected_failure": true
 },
 {
+	"base": "command",
+	"name": "simple command",
+	"command": "true"
+},
+{
+	"base": "command",
+	"name": "simple bad command",
+	"command": "false",
+	"expected_failure": true
+},
+{
 	"base": "gst_error",
 	"name": "gst_error",
 	"state_error": 1,
