@@ -1,6 +1,14 @@
 import glib
 import gst
 
+import sys
+import traceback
+
+def _get_exception():
+	etype, value, tb = sys.exc_info()
+	lines = traceback.format_exception_only(etype, value)
+	return ". ".join([ i.strip() for i in lines ])
+
 class GstTest(object):
 
 	def __init__(self):
@@ -18,7 +26,7 @@ class GstTest(object):
 			self.player.set_state(gst.STATE_PLAYING)
 			self.loop.run()
 		except:
-			self.error = "unknown error"
+			self.error = _get_exception()
 
 		if not self.error:
 			self.on_stop()
