@@ -27,6 +27,7 @@ class GstTest(object):
 			self.loop.run()
 		except:
 			self.error = _get_exception()
+			traceback.print_exc()
 
 		if not self.error:
 			self.on_stop()
