@@ -37,6 +37,12 @@
 },
 {
 	"base": "gst_venc",
+	"name": "gst_exception",
+	"element": "foobar",
+	"expected_failure": true
+},
+{
+	"base": "gst_venc",
 	"name": "theora_qcif",
 	"element": "theoraenc",
 	"bitrate": 800000,
