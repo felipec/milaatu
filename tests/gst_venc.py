@@ -70,7 +70,9 @@ class GstVEncoderTest(GstTest):
 		if self.intra_refresh is not None:
 			enc.props.intra_refresh = self.intra_refresh
 
-		enc.props.bitrate = bitrate
+		if bitrate:
+			enc.props.bitrate = bitrate
+
 		sink = gst.element_factory_make("fakesink")
 
 		s = gst.Structure("video/x-raw-yuv")
