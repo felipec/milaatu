@@ -108,7 +108,7 @@ class GstVEncoderTest(GstTest):
 		if self.codec == "h264":
 			if self.total_count > 0:
 				type = unpack_from('b', buffer, 4)[0] & 0x1f
-				if (self.total_count % self.framerate == 0 and type != 7 and type != 8):
+				if (self.total_count % self.framerate == 0 and type != 5):
 					self.missed_keyframes += 1
 			self.total_count += 1
 		self.buffer_sizes.append(buffer.size)
