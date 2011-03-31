@@ -30,6 +30,7 @@ class GstVEncoderTest(GstTest):
 		# h264 keyframe check
 		self.total_count = 0
 		self.missed_keyframes = 0
+		self.extra_keyframes = 0
 		self.bytestream = True
 		self.keyframe_interval = 1
 
@@ -117,6 +118,9 @@ class GstVEncoderTest(GstTest):
 				if (self.total_count % (self.keyframe_interval * self.framerate) == 0):
 					if (type != 5):
 						self.missed_keyframes += 1
+				else:
+					if (type == 5 or type == 7 or type == 8):
+						self.extra_keyframes += 1
 			self.total_count += 1
 		self.buffer_sizes.append(buffer.size)
 		self.buffer_times.append(time.time())
@@ -147,6 +151,6 @@ class GstVEncoderTest(GstTest):
 				self.checks['bitrate'] = 0
 				print "missed by %i%%" % (abs(tbt - bt) / tbt * 100)
 		if self.codec == "h264":
-			self.checks['keyframes-ok'] = self.missed_keyframes == 0
+			self.checks['keyframes-ok'] = self.missed_keyframes == 0 and self.extra_keyframes == 0
 
 test_class = GstVEncoderTest
