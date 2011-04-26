@@ -190,6 +190,7 @@ if test_name:
 		else:
 			print >> sys.stderr, "result: %d" % (r)
 			e = -1
+		print json.dumps(data, indent = 4, sort_keys = True)
 		sys.exit(e)
 
 run['results'] = results
