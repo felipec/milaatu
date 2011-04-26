@@ -171,7 +171,7 @@ for t in tests:
 		to_run = t
 		break
 	else:
-		print t['name']
+		print "== %s ==" % t['name']
 		data = run_test(t)
 		results.append(data)
 
@@ -180,6 +180,7 @@ if test_name:
 		print >> sys.stderr, "test not found"
 		sys.exit(-1)
 	else:
+		print "== %s ==" % t['name']
 		data = run_test(t)
 		if 'error' in data:
 			print >> sys.stderr, "error: %s" % data['error']
