@@ -118,11 +118,15 @@ class GstVEncoderBitrateTest(GstTest):
 		bitrate_checks = self.bitrateseq.split(',')
 		bitrate_target = self.bitrate
 		for index, btime in enumerate(self.buffer_times):
+			if (btime < 1.0):
+				# ignore buffers for the first second
+				continue
 			if (len(bitrate_checks) > 0):
 				next_change = float(bitrate_checks[0].split(':')[0])
 				if (btime >= next_change):
 					bitrate_target = int(bitrate_checks[0].split(':')[1])
 					if ((btime - next_change) < 1.0):
+						# ignore buffers one second after changing the bitrate
 						continue
 					bitrate_checks.pop(0)
 					sliding_window = []
