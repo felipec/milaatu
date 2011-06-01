@@ -93,11 +93,11 @@ class GstVEncoderBitrateTest(GstTest):
 			return True
 
 		self.buffer_sizes.append(buffer.size)
-		buffer_ts = float(buffer.timestamp) / gst.SECOND
+		buffer_ts = int(buffer.timestamp)
 		self.buffer_times.append(buffer_ts)
 
 		if (len(self.bitrates) > 0):
-			next_change = float(self.bitrates[0].split(':')[0])
+			next_change = int(self.bitrates[0].split(':')[0]) * gst.SECOND
 			if (buffer_ts >= next_change):
 				br = int(self.bitrates[0].split(':')[1])
 				enc = self.player.get_by_name("encoder")
@@ -118,14 +118,14 @@ class GstVEncoderBitrateTest(GstTest):
 		bitrate_checks = self.bitrateseq.split(',')
 		bitrate_target = self.bitrate
 		for index, btime in enumerate(self.buffer_times):
-			if (btime < 1.0):
+			if (btime < gst.SECOND):
 				# ignore buffers for the first second
 				continue
 			if (len(bitrate_checks) > 0):
-				next_change = float(bitrate_checks[0].split(':')[0])
+				next_change = int(bitrate_checks[0].split(':')[0]) * gst.SECOND
 				if (btime >= next_change):
 					bitrate_target = int(bitrate_checks[0].split(':')[1])
-					if ((btime - next_change) < 1.0):
+					if ((btime - next_change) < gst.SECOND):
 						# ignore buffers one second after changing the bitrate
 						continue
 					bitrate_checks.pop(0)
@@ -137,13 +137,12 @@ class GstVEncoderBitrateTest(GstTest):
 
 			try:
 				delta = self.buffer_times[index + 1] - sliding_window[len(sliding_window) - 1]
-				if delta <= 1:
+				if delta < gst.SECOND:
 					continue
-
 				if not self.check_bitrate_error(bsizes, bitrate_target):
 					break
 
-				while delta > 1:
+				while delta >= gst.SECOND:
 					sliding_window.pop(len(sliding_window) - 1)
 					bsizes.pop(len(bsizes) - 1)
 					delta = self.buffer_times[index + 1] - sliding_window[len(sliding_window) - 1]
