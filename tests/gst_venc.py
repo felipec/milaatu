@@ -47,7 +47,6 @@ class GstVEncoderTest(GstTest):
 
 		if self.location:
 			src = gst.element_factory_make("filesrc")
-			src.props.num_buffers = self.num_buffers
 			src.props.location = self.location
 			if self.format == "I420":
 				bpp = 1.5
@@ -56,7 +55,8 @@ class GstVEncoderTest(GstTest):
 			src.props.blocksize = int(width * height * bpp)
 		else:
 			src = gst.element_factory_make("videotestsrc")
-			src.props.num_buffers = self.num_buffers
+
+		src.props.num_buffers = self.num_buffers
 		bitrate = self.bitrate
 		enc = gst.element_factory_make(self.element)
 		if self.element == "x264enc":
