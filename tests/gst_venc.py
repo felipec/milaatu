@@ -110,25 +110,31 @@ class GstVEncoderTest(GstTest):
 		sink.set_property("signal-handoffs", True)
 		return p
 
+	def check_keyframe_interval(self, type, buffer, timestamp):
+		if self.keyframe_interval == 0:
+			return
+
+		got_i_slices = False
+		if (type == 1 or type == 5):
+			v = unpack_from('b', buffer, 5)[0]
+			# first_mb_in_slice = 0 (1 in ue)
+			# slice_type = 2 or 7 (011 or 0001000 in ue)
+			if (v & 0xf0 == 0xb0) or (v == 0x88):
+				got_i_slices = True
+
+		if ((timestamp / gst.SECOND) % self.keyframe_interval == 0):
+			if (not got_i_slices):
+				self.missed_keyframes += 1
+		else:
+			if (type == 5 or type == 7 or type == 8 or got_i_slices):
+				self.extra_keyframes += 1
+
 	def handoff(self, element, buffer, pad):
 		if self.codec == "h264":
 			timestamp = float(buffer.timestamp)
 			if timestamp > 0:
-				got_i_slices = False
 				type = unpack_from('b', buffer, 4)[0] & 0x1f
-				if (type == 1 or type == 5):
-					v = unpack_from('b', buffer, 5)[0]
-					# first_mb_in_slice = 0 (1 in ue)
-					# slice_type = 2 or 7 (011 or 0001000 in ue)
-					if (v & 0xf0 == 0xb0) or (v == 0x88):
-						got_i_slices = True
-
-				if ((timestamp / gst.SECOND) % self.keyframe_interval == 0):
-					if (not got_i_slices):
-						self.missed_keyframes += 1
-				else:
-					if (type == 5 or type == 7 or type == 8 or got_i_slices):
-						self.extra_keyframes += 1
+				self.check_keyframe_interval(type, buffer, timestamp)
 		self.buffer_sizes.append(buffer.size)
 		self.buffer_times.append(time.time())
 		return True
