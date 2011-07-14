@@ -33,6 +33,11 @@ class GstVEncoderTest(GstTest):
 		self.bytestream = True
 		self.keyframe_interval = 1
 
+		# h264 IDR frames check
+		self.missed_iframes = 0
+		self.forced_iframe = False
+		self.iframe_interval = 0
+
 	def start(self):
 		# cache the file
 		if self.location:
@@ -110,6 +115,12 @@ class GstVEncoderTest(GstTest):
 		sink.set_property("signal-handoffs", True)
 		return p
 
+	def send_keyframe_event(self):
+		struct = gst.Structure("GstForceKeyUnit")
+		event = gst.event_new_custom(gst.EVENT_CUSTOM_UPSTREAM, struct)
+		self.player.send_event(event)
+		return True
+
 	def check_keyframe_interval(self, type, buffer, timestamp):
 		if self.keyframe_interval == 0:
 			return
@@ -129,12 +140,30 @@ class GstVEncoderTest(GstTest):
 			if (type == 5 or type == 7 or type == 8 or got_i_slices):
 				self.extra_keyframes += 1
 
+	def check_iframe_interval(self, type, buffer, timestamp):
+		if self.iframe_interval == 0:
+			return
+
+		iframe_pos = (timestamp / gst.SECOND) % self.iframe_interval
+		if (iframe_pos == 0):
+			self.forced_iframe = True
+			self.send_keyframe_event()
+		elif self.forced_iframe:
+			if type != 5:
+				max_iframe_delay = 1.0 / self.framerate * 8 # 5 frames
+				if iframe_pos > max_iframe_delay:
+					self.missed_iframes += 1
+				else:
+					return
+			self.forced_iframe = False
+
 	def handoff(self, element, buffer, pad):
 		if self.codec == "h264":
 			timestamp = float(buffer.timestamp)
 			if timestamp > 0:
 				type = unpack_from('b', buffer, 4)[0] & 0x1f
 				self.check_keyframe_interval(type, buffer, timestamp)
+				self.check_iframe_interval(type, buffer, timestamp)
 		self.buffer_sizes.append(buffer.size)
 		self.buffer_times.append(time.time())
 		return True
@@ -165,5 +194,6 @@ class GstVEncoderTest(GstTest):
 				print "missed by %i%%" % (abs(tbt - bt) / tbt * 100)
 		if self.codec == "h264":
 			self.checks['keyframes-ok'] = self.missed_keyframes == 0 and self.extra_keyframes == 0
+			self.checks['iframes-ok'] = self.missed_iframes == 0
 
 test_class = GstVEncoderTest
