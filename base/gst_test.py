@@ -19,11 +19,11 @@ class GstTest(object):
 	def start(self):
 		try:
 			self.loop = glib.MainLoop()
-			self.player = self.create_pipeline()
-			bus = self.player.get_bus()
+			self.pipeline = self.create_pipeline()
+			bus = self.pipeline.get_bus()
 			bus.add_signal_watch()
 			bus.connect("message", self.on_message)
-			self.player.set_state(gst.STATE_PLAYING)
+			self.pipeline.set_state(gst.STATE_PLAYING)
 			self.loop.run()
 		except:
 			self.error = _get_exception()
@@ -43,10 +43,10 @@ class GstTest(object):
 
 	def on_message(self, bus, message):
 		if message.type == gst.MESSAGE_EOS:
-			self.player.set_state(gst.STATE_NULL)
+			self.pipeline.set_state(gst.STATE_NULL)
 			self.loop.quit()
 		elif message.type == gst.MESSAGE_ERROR:
-			self.player.set_state(gst.STATE_NULL)
+			self.pipeline.set_state(gst.STATE_NULL)
 			err, debug = message.parse_error()
 			self.error = err.message
 			self.loop.quit()

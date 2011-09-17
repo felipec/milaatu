@@ -118,7 +118,7 @@ class GstVEncoderTest(GstTest):
 	def send_keyframe_event(self):
 		struct = gst.Structure("GstForceKeyUnit")
 		event = gst.event_new_custom(gst.EVENT_CUSTOM_UPSTREAM, struct)
-		self.player.send_event(event)
+		self.pipeline.send_event(event)
 		return True
 
 	def check_keyframe_interval(self, type, buffer, timestamp):

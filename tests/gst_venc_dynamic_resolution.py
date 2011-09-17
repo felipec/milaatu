@@ -96,9 +96,9 @@ class GstVEncoderResolutionTest(GstTest):
 			target_format = tmp[3]
 
 			self.index += 1
-			enc = self.player.get_by_name("encoder")
+			enc = self.pipeline.get_by_name("encoder")
 			enc.props.bitrate = target_bitrate
-			caps = self.player.get_by_name("capsf")
+			caps = self.pipeline.get_by_name("capsf")
 			print "Previous caps: " + str(caps.get_property("caps"))
 
 			width, height = [int(x) for x in target_res.split("x")]

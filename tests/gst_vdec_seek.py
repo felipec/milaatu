@@ -56,7 +56,7 @@ class GstSeekTest(GstTest):
 		if (not self.timer_set) and (new == gst.STATE_PLAYING):
 			self.timer_set = True
 			glib.timeout_add(1000, self.seek_timeout)
-			self.duration = self.player.query_duration(gst.FORMAT_TIME, None)[0]
+			self.duration = self.pipeline.query_duration(gst.FORMAT_TIME, None)[0]
 
 	def seek_timeout(self):
 		self.state += 1
@@ -78,7 +78,7 @@ class GstSeekTest(GstTest):
 
 		# seek to a position 1 sec before clip end -> EOS
 		if self.state == 4:
-			pos_now = self.player.query_position(gst.FORMAT_TIME, None)[0]
+			pos_now = self.pipeline.query_position(gst.FORMAT_TIME, None)[0]
 			self.checks['seek_to_end'] = \
 					self.seek((self.duration - pos_now - gst.SECOND) / gst.SECOND)
 
@@ -88,23 +88,23 @@ class GstSeekTest(GstTest):
 		assert False
 
 	def seek(self, secs):
-		pos_before = self.player.query_position(gst.FORMAT_TIME, None)[0]
+		pos_before = self.pipeline.query_position(gst.FORMAT_TIME, None)[0]
 		seek_ns = pos_before + (secs * gst.SECOND)
 		seek_start_time = time.time()
 
-		if not self.player.seek_simple(gst.FORMAT_TIME, gst.SEEK_FLAG_FLUSH, seek_ns):
+		if not self.pipeline.seek_simple(gst.FORMAT_TIME, gst.SEEK_FLAG_FLUSH, seek_ns):
 			print "seek error"
 			return 0
 
 		# wait for seek to complete
-		if self.player.get_state() != (gst.STATE_CHANGE_SUCCESS, \
+		if self.pipeline.get_state() != (gst.STATE_CHANGE_SUCCESS, \
 				gst.STATE_PLAYING, \
 				gst.STATE_VOID_PENDING):
 			print "seek error"
 			return 0
 
 		seek_ready_time = time.time()
-		pos_after = self.player.query_position(gst.FORMAT_TIME, None)[0]
+		pos_after = self.pipeline.query_position(gst.FORMAT_TIME, None)[0]
 
 		seek_dur = pos_after - pos_before
 		seek_inac = secs * gst.SECOND - seek_dur

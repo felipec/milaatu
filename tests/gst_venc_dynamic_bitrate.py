@@ -100,7 +100,7 @@ class GstVEncoderBitrateTest(GstTest):
 			next_change = int(self.bitrates[0].split(':')[0]) * gst.SECOND
 			if (buffer_ts >= next_change):
 				br = int(self.bitrates[0].split(':')[1])
-				enc = self.player.get_by_name("encoder")
+				enc = self.pipeline.get_by_name("encoder")
 				enc.props.bitrate = br
 				self.bitrates.pop(0)
 		return True
