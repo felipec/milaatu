@@ -14,6 +14,7 @@ class GstQualityVDecoderTest(GstTest):
 		self.input_buffers = 0
 		self.output_buffers = 0
 		self.ssim_avg = self.ssim_min = self.ssim_max = 0
+		self.queue_mem = 20 * 1024 * 1024
 
 	def pad_add(self, demuxer, pad, data):
 		if not str(pad.get_caps()).startswith("video/"):
@@ -48,6 +49,11 @@ class GstQualityVDecoderTest(GstTest):
 		post_id = gst.element_factory_make("identity")
 
 		demux.connect("pad-added", self.pad_add, tee)
+
+		queue.set_properties(
+				max_size_bytes=self.queue_mem,
+				max_size_time=0,
+				max_size_buffers=0)
 
 		p.add(src, demux, tee, dec, dec2, queue, ssim, sink)
 		p.add(pre_id, post_id)
