@@ -31,7 +31,7 @@ class GstVEncoderTest(GstTest):
 		self.missed_keyframes = 0
 		self.extra_keyframes = 0
 		self.bytestream = True
-		self.keyframe_interval = 1
+		self.keyframe_interval = None
 
 		# h264 IDR frames check
 		self.missed_iframes = 0
