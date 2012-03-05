@@ -38,6 +38,8 @@ class GstVEncoderTest(GstTest):
 		self.forced_iframe = False
 		self.iframe_interval = 0
 
+		self.extra_parameters = {}
+
 	def start(self):
 		# cache the file
 		if self.location:
@@ -64,6 +66,10 @@ class GstVEncoderTest(GstTest):
 		src.props.num_buffers = self.num_buffers
 		bitrate = self.bitrate
 		enc = gst.element_factory_make(self.element)
+
+		for (key, value) in self.extra_parameters.iteritems():
+			enc.set_property(key, value)
+
 		if self.element == "x264enc":
 			bitrate /= 1000
 			enc.props.key_int_max = self.framerate
