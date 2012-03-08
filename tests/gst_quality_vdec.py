@@ -34,6 +34,7 @@ class GstQualityVDecoderTest(GstTest):
 				".wmv": "asfdemux",
 				".mp4": "qtdemux",
 				".avi": "avidemux",
+				".mkv": "matroskademux",
 				".gdp": "gdpdepay" }
 
 		demux = gst.element_factory_make(ext_demux.get(ext))
