@@ -41,10 +41,13 @@ class GstSeekTest(GstTest):
 		demux = gst.element_factory_make(ext_demux.get(ext))
 		dec = gst.element_factory_make(self.element)
 		sink = gst.element_factory_make("fakesink")
-		demux.connect("pad-added", self.pad_add)
 
 		p.add(src, demux, dec, sink)
 		src.link(demux)
+		try:
+			demux.link(dec)
+		except gst.LinkError:
+			demux.connect("pad-added", self.pad_add)
 		dec.link(sink)
 
 		self.dec = dec

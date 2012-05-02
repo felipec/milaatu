@@ -49,8 +49,6 @@ class GstQualityVDecoderTest(GstTest):
 		pre_id = gst.element_factory_make("identity")
 		post_id = gst.element_factory_make("identity")
 
-		demux.connect("pad-added", self.pad_add, tee)
-
 		queue.set_properties(
 				max_size_bytes=self.queue_mem,
 				max_size_time=0,
@@ -60,6 +58,10 @@ class GstQualityVDecoderTest(GstTest):
 		p.add(pre_id, post_id)
 
 		src.link(demux)
+		try:
+			demux.link(dec)
+		except gst.LinkError:
+			demux.connect("pad-added", self.pad_add, tee)
 		gst.element_link_many(tee, pre_id, dec, post_id, queue, ssim)
 		gst.element_link_many(tee, dec2, queue, ssim)
 		ssim.link(sink)
