@@ -12,6 +12,7 @@ class GstVDecoderTest(GstTest):
 		self.element = None
 		self.num_buffers = 500
 		self.expected_framerate = 0
+		self.expected_max_delay = 0
 
 		self.buffer_times = []
 
@@ -69,11 +70,19 @@ class GstVDecoderTest(GstTest):
 			return
 		total_time = self.buffer_times[-1] - self.buffer_times[0]
 		fps = count / total_time
+		max_delay = max(b - a for a, b in zip(self.buffer_times[:-1], self.buffer_times[1:]))
+		max_delay = int(max_delay * 1000)
 		self.out['framerate'] = int(fps)
 		if self.expected_framerate:
 			if fps >= self.expected_framerate:
 				self.checks['framerate'] = 1
 			else:
 				self.checks['framerate'] = 0
+		self.out['max_delay'] = max_delay
+		if self.expected_max_delay:
+			if max_delay < self.expected_max_delay:
+				self.checks['max_delay'] = 1
+			else:
+				self.checks['max_delay'] = 0
 
 test_class = GstVDecoderTest
