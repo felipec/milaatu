@@ -55,6 +55,7 @@
 	"name": "h264_1080p_dec",
 	"element": "ffdec_h264",
 	"location": "/home/felipec/Downloads/big_buck_bunny_1080p_h264.mov",
-	"expected_framerate": 30
+	"expected_framerate": 30,
+	"expected_max_delay": 20
 }
 ]
