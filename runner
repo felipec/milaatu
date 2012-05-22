@@ -114,6 +114,16 @@ def respawn():
 def get_date():
 	return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+def get_time(pid):
+	cpu_values = file("/proc/stat", "r").readline().split()[1:]
+	total_time = sum(map(int, cpu_values))
+
+	pid_values = file("/proc/%s/stat" % (pid), "r").readline().split()
+	utime, stime = map(int, pid_values[13:15])
+	process_time = utime + stime
+
+	return total_time, process_time
+
 def run_test(t):
 	global pid
 
@@ -122,6 +132,8 @@ def run_test(t):
 	n['base'] = t.pop('base')
 	n['in'] = t
 	n['env'] = t.pop('env', None)
+
+	time_before = get_time(pid)
 
 	p2.dump(n)
 	data = p1.load()
@@ -142,6 +154,12 @@ def run_test(t):
 
 	if data['in'].get('expected_failure', False):
 		r = 100.0 - r
+
+	time_after = get_time(pid)
+
+	total_time, process_time = [b - a for a, b in zip(time_before, time_after)]
+
+	data['cpu_usage'] = 100 * (float(process_time) / float(total_time))
 
 	data['result'] = r
 	data['date'] = get_date()
