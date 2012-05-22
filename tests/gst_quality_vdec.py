@@ -33,6 +33,7 @@ class GstQualityVDecoderTest(GstTest):
 				".asf": "asfdemux",
 				".wmv": "asfdemux",
 				".mp4": "qtdemux",
+				".mov": "qtdemux",
 				".avi": "avidemux",
 				".mkv": "matroskademux",
 				".gdp": "gdpdepay" }
