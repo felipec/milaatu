@@ -52,9 +52,9 @@
 },
 {
 	"base": "gst_vdec",
-	"name": "mpeg4_dec_ntsc",
-	"element": "ffdec_mpeg4",
-	"location": "/data/private/mma-test-data/decoders/mpeg4/functional/mpeg4_NTSC_30f_8mb__ASPL5_parkjoy.m4v.mp4",
-	"expected_framerate": 300
+	"name": "h264_1080p_dec",
+	"element": "ffdec_h264",
+	"location": "/home/felipec/Downloads/big_buck_bunny_1080p_h264.mov",
+	"expected_framerate": 30
 }
 ]
