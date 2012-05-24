@@ -78,6 +78,9 @@ class GstVDecoderTest(GstTest):
 				self.checks['framerate'] = 1
 			else:
 				self.checks['framerate'] = 0
+			# calculate max delay
+			if not self.expected_max_delay:
+				self.expected_max_delay = 1000 / self.expected_framerate
 		self.out['max_delay'] = max_delay
 		if self.expected_max_delay:
 			if max_delay < self.expected_max_delay:
