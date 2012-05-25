@@ -13,6 +13,7 @@ parser.add_option("-f", "--file")
 parser.add_option("-r", "--results", default="/tmp/results.json")
 parser.add_option("-u", "--user", default="")
 parser.add_option("-w", "--hardware", default="")
+parser.add_option("-o", "--output")
 
 (options, args) = parser.parse_args()
 
@@ -21,6 +22,11 @@ hardware = options.hardware
 tests_file = options.file
 test_results = options.results
 test_name = options.test
+
+if options.output:
+    output = open(options.output, "a")
+else:
+    output = sys.stdout
 
 class Pipe(object):
 	def __init__(self):
@@ -189,7 +195,7 @@ for t in tests:
 		to_run = t
 		break
 	else:
-		print "== %s ==" % t['name']
+		print >> output, "== %s ==" % t['name']
 		data = run_test(t)
 		results.append(data)
 
@@ -198,7 +204,7 @@ if test_name:
 		print >> sys.stderr, "test not found"
 		sys.exit(-1)
 	else:
-		print "== %s ==" % t['name']
+		print >> output, "== %s ==" % t['name']
 		data = run_test(t)
 		if 'error' in data:
 			print >> sys.stderr, "error: %s" % data['error']
@@ -208,7 +214,7 @@ if test_name:
 		else:
 			print >> sys.stderr, "result: %d" % (r)
 			e = -1
-		print json.dumps(data, indent = 4, sort_keys = True)
+		print >> output, json.dumps(data, indent = 4, sort_keys = True)
 		sys.exit(e)
 
 run['results'] = results
